@@ -1,0 +1,64 @@
+# Конфигурация ML-сервиса для production-окружения
+
+replicaCount: 3
+
+image:
+  repository: ml-service
+  tag: "1.0.0"
+  pullPolicy: Always
+
+env:
+  modelVersion: "1.0.0"
+  logLevel: "WARNING"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+  host: ml-service.prod.example.com
+  path: /
+  pathType: Prefix
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "1000m"
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilization: 70
+
+probes:
+  startup:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    failureThreshold: 30
+    timeoutSeconds: 5
+  readiness:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 3
+    timeoutSeconds: 5
+  liveness:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 15
+    periodSeconds: 20
+    failureThreshold: 3
+    timeoutSeconds: 5

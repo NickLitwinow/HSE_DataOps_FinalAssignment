@@ -1,0 +1,17 @@
+services:
+  jupyterhub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jupyterhub
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${JUPYTERHUB_PORT:-8888}:8000"
+    volumes:
+      - ./jupyterhub_config.py:/srv/jupyterhub/jupyterhub_config.py:ro
+      - jupyterhub-data:/srv/jupyterhub
+
+volumes:
+  jupyterhub-data:

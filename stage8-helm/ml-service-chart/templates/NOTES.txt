@@ -1,0 +1,20 @@
+ML-сервис успешно развёрнут!
+
+Получить URL сервиса:
+{{- if .Values.ingress.enabled }}
+  http://{{ .Values.ingress.host }}{{ .Values.ingress.path }}
+{{- else }}
+  export POD_NAME=$(kubectl get pods -l "app={{ include "ml-service-chart.fullname" . }}" -o jsonpath="{.items[0].metadata.name}")
+  kubectl port-forward $POD_NAME 8000:8000
+  echo "ML-сервис доступен на http://localhost:8000"
+{{- end }}
+
+Эндпоинты:
+  GET  /health          — проверка здоровья
+  POST /api/v1/predict  — предсказание
+  GET  /metrics         — Prometheus-метрики
+
+Тестовый запрос:
+  curl -X POST http://{{ .Values.ingress.host }}/api/v1/predict \
+    -H "Content-Type: application/json" \
+    -d '{"age":0.05,"sex":0.05,"bmi":0.06,"bp":0.02,"s1":-0.04,"s2":-0.03,"s3":-0.04,"s4":0.03,"s5":0.04,"s6":-0.01}'

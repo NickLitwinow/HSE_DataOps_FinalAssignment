@@ -1,0 +1,69 @@
+# Количество реплик
+replicaCount: 2
+
+# Настройки Docker-образа
+image:
+  repository: ml-service
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+# Переменные окружения
+env:
+  modelVersion: "1.0.0"
+  logLevel: "INFO"
+
+# Автоскейлинг (HPA)
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 8
+  targetCPUUtilization: 70
+
+# Настройки сервиса
+service:
+  type: ClusterIP
+  port: 80
+
+# Настройки Ingress
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  host: ml-service.example.com
+  path: /
+  pathType: Prefix
+
+# Ресурсы контейнера (CPU и memory)
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "500m"
+
+# Проверки здоровья
+probes:
+  startup:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    failureThreshold: 30
+    timeoutSeconds: 3
+  readiness:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 3
+    timeoutSeconds: 3
+  liveness:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 15
+    periodSeconds: 20
+    failureThreshold: 3
+    timeoutSeconds: 3

@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:17
+    container_name: mlservice-db
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_PORT:-5435}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mlservice_user} -d ${POSTGRES_DB:-mlservice_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mlapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mlapp
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  pgdata:

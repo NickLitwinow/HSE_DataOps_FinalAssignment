@@ -1,0 +1,60 @@
+# Конфигурация ML-сервиса для staging-окружения
+
+replicaCount: 1
+
+image:
+  repository: ml-service
+  tag: "1.0.0-rc1"
+  pullPolicy: Always
+
+env:
+  modelVersion: "1.0.0-rc1"
+  logLevel: "DEBUG"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  host: ml-service.staging.example.com
+  path: /
+  pathType: Prefix
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "500m"
+
+autoscaling:
+  enabled: false
+
+probes:
+  startup:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    failureThreshold: 30
+    timeoutSeconds: 3
+  readiness:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 3
+    timeoutSeconds: 3
+  liveness:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 15
+    periodSeconds: 20
+    failureThreshold: 3
+    timeoutSeconds: 3
