@@ -15,7 +15,7 @@ all.up: ## Запустить все сервисы одновременно (st
 	@echo ""
 	@echo "Все сервисы запущены:"
 	@echo "  MLflow:       http://localhost:5001"
-	@echo "  MinIO (MLflow): http://localhost:9001"
+	@echo "  MinIO (MLflow): http://localhost:9005"
 	@echo "  Airflow:      http://localhost:8080"
 	@echo "  LakeFS:       http://localhost:8001"
 	@echo "  MinIO (LakeFS): http://localhost:9003"

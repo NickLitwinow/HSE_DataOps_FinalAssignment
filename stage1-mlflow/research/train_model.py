@@ -15,7 +15,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 MLFLOW_TRACKING_URI = "http://localhost:5001"
 EXPERIMENT_NAME = "diabetes-prediction"
 
-os.environ.setdefault("MLFLOW_S3_ENDPOINT_URL", "http://localhost:9000")
+os.environ.setdefault("MLFLOW_S3_ENDPOINT_URL", "http://localhost:9004")
 os.environ.setdefault("AWS_ACCESS_KEY_ID", "minio_admin")
 os.environ.setdefault("AWS_SECRET_ACCESS_KEY", "minio_secret123")
 
